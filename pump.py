@@ -16,3 +16,6 @@ def get_pump(
         fmax=fmax, log=True, conv='tf')
 
     return pumpp.Pump(mel)
+
+
+get_pump()

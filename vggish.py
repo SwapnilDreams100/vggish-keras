@@ -10,10 +10,9 @@ import os
 import logging
 from functools import partial
 
-import tensorflow as tf
-from tensorflow.keras.models import Model
-import tensorflow.keras.layers as tfkl
-import tensorflow.keras.backend as K
+from keras.models import Model
+import keras.layers as kl
+import keras.backend as K
 
 from .postprocess import Postprocess
 from . import params
@@ -21,8 +20,7 @@ from . import params
 log = logging.getLogger(__name__)
 
 
-def VGGish(pump=None,
-           input_shape=None,
+def VGGish(input_shape=None,
            include_top=False,
            pooling='avg',
            weights='audioset',
@@ -58,23 +56,23 @@ def VGGish(pump=None,
         elif include_top:
             input_shape = params.NUM_FRAMES, params.NUM_BANDS, 1
 
-        elif pump:
-            inputs = pump.layers('tf.keras')[params.PUMP_INPUT]
+        # elif pump:
+        #     input_shape = params.NUM_FRAMES, params.NUM_BANDS
 
         else:
             input_shape = None, None, 1
 
         # use input_shape to make input
         if input_shape:
-            inputs = tfkl.Input(shape=input_shape, name='input_1')
+            inputs = kl.Input(shape=input_shape, name='input_1')
 
         # setup layer params
         conv = partial(
-            tfkl.Conv2D,
+            kl.Conv2D,
             kernel_size=(3, 3), strides=(1, 1), activation='relu', padding='same')
 
         maxpool = partial(
-            tfkl.MaxPooling2D, pool_size=(2, 2), strides=(2, 2), padding='same')
+            kl.MaxPooling2D, pool_size=(2, 2), strides=(2, 2), padding='same')
 
         # Block 1
         x = conv(64, name='conv1')(inputs)
@@ -95,10 +93,10 @@ def VGGish(pump=None,
         x = maxpool(name='pool4')(x)
 
         if include_top:
-            dense = partial(tfkl.Dense, activation='relu')
+            dense = partial(kl.Dense, activation='relu')
 
             # FC block
-            x = tfkl.Flatten(name='flatten_')(x)
+            x = kl.Flatten(name='flatten_')(x)
             x = dense(4096, name='fc1/fc1_1')(x)
             x = dense(4096, name='fc1/fc1_2')(x)
             x = dense(params.EMBEDDING_SIZE, name='fc2')(x)
@@ -107,8 +105,8 @@ def VGGish(pump=None,
                 x = Postprocess()(x)
         else:
             globalpool = (
-                tfkl.GlobalAveragePooling2D() if pooling == 'avg' else
-                tfkl.GlobalMaxPooling2D() if pooling == 'max' else None)
+                kl.GlobalAveragePooling2D() if pooling == 'avg' else
+                kl.GlobalMaxPooling2D() if pooling == 'max' else None)
 
             if globalpool:
                 x = globalpool(x)
@@ -117,7 +115,6 @@ def VGGish(pump=None,
         model = Model(inputs, x, name='model')
         load_vggish_weights(model, weights, strict=bool(weights))
     return model
-
 
 def load_vggish_weights(model, weights, strict=False):
     # lookup weights location

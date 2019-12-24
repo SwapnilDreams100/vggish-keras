@@ -23,7 +23,7 @@ NUM_BANDS = 64  # Frequency bands in input mel-spectrogram patch.
 EMBEDDING_SIZE = 128  # Size of embedding layer.
 
 # Hyperparameters used in feature and example generation.
-SAMPLE_RATE = 16000
+SAMPLE_RATE = 48000
 STFT_WINDOW_LENGTH_SECONDS = 0.025
 STFT_HOP_LENGTH_SECONDS = 0.010
 NUM_MEL_BINS = NUM_BANDS
@@ -51,7 +51,7 @@ OUTPUT_OP_NAME = 'vggish/embedding'
 OUTPUT_TENSOR_NAME = OUTPUT_OP_NAME + ':0'
 AUDIO_EMBEDDING_FEATURE_NAME = 'audio_embedding'
 
-PUMP_INPUT = 'mel/mag'
+# PUMP_INPUT = 'mel/mag'
 
 import pkg_resources
 resfile = lambda f: pkg_resources.resource_filename(__name__, f)
