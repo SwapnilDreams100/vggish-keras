@@ -1,63 +1,35 @@
-"""VGGish model for Keras. A VGG-like model for audio classification
-
-# Reference
-
-- [CNN Architectures for Large-Scale Audio Classification](ICASSP 2017)
-
-"""
-
 import os
 import logging
 from functools import partial
 
-from keras.models import Model
-import keras.layers as kl
-import keras.backend as K
+import tensorflow as tf
+from tensorflow.keras.models import Model
+import tensorflow.keras.layers as kl
+import tensorflow.keras.backend as K
 
-from .postprocess import Postprocess
-from . import params
+from postprocess import Postprocess
+import params
 
 log = logging.getLogger(__name__)
 
 
-def VGGish(input_shape=None,
+def VGGish(pump=None,
+           input_shape=None,
            include_top=False,
            pooling='avg',
            weights='audioset',
            name='vggish',
            compress=False):
-    '''A Keras implementation of the VGGish architecture.
-
-    Arguments:
-        pump (pumpp.Pump): The model pump object.
-
-        input_shape (tuple): the model input shape. If ``include_top``,
-            ``input_shape`` will be set to ``(params.NUM_FRAMES, params.NUM_BANDS, 1)``,
-            otherwise it will be ``(None, None, 1)`` to accomodate variable sized
-            inputs.
-
-        include_top (bool): whether to include the fully connected layers. Default is False.
-
-        pooling (str): what type of global pooling should be applied if no top? Default is 'avg'
-
-        weights (str, None): the weights to use (see WEIGHTS_PATHS). Currently, there is
-            only 'audioset'. Can also be a path to a keras weights file.
-
-        name (str): the name for the model.
-
-    Returns:
-        A Keras model instance.
-    '''
 
     with tf.name_scope(name):
         if input_shape:
             pass
 
+        elif pump:
+            inputs = pump.layers('tf.keras')[params.PUMP_INPUT]
+
         elif include_top:
             input_shape = params.NUM_FRAMES, params.NUM_BANDS, 1
-
-        # elif pump:
-        #     input_shape = params.NUM_FRAMES, params.NUM_BANDS
 
         else:
             input_shape = None, None, 1
@@ -121,14 +93,7 @@ def load_vggish_weights(model, weights, strict=False):
     if weights in params.WEIGHTS_PATHS:
         w_name, weights = weights, params.WEIGHTS_PATHS[weights]
 
-        if not os.path.isfile(weights):
-            log.warning(f'"{weights}" weights have not been downloaded. Downloading now...')
-            from .download_helpers import download_weights
-            download_weights.download(w_name)
-
     # load weights
     if weights:
         model.load_weights(weights, by_name=True)
-    elif strict:
-        raise RuntimeError('No weights could be found for weights={}'.format(weights))
     return model

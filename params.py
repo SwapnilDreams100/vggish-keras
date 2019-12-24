@@ -1,18 +1,3 @@
-# Copyright 2017 The TensorFlow Authors All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
-
 """Global parameters for the VGGish model.
 See vggish_slim.py for more information.
 """
@@ -51,7 +36,7 @@ OUTPUT_OP_NAME = 'vggish/embedding'
 OUTPUT_TENSOR_NAME = OUTPUT_OP_NAME + ':0'
 AUDIO_EMBEDDING_FEATURE_NAME = 'audio_embedding'
 
-# PUMP_INPUT = 'mel/mag'
+PUMP_INPUT = 'mel/mag'
 
 import pkg_resources
 resfile = lambda f: pkg_resources.resource_filename(__name__, f)
@@ -60,4 +45,4 @@ WEIGHTS_PATHS = {
     'audioset': resfile('model/audioset_weights.h5')
 }
 
-PCA_PARAMS = resfile('model/audioset_pca_params.npz')
+# PCA_PARAMS = resfile('model/audioset_pca_params.npz')
